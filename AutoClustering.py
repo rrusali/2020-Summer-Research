@@ -2,33 +2,51 @@ from ovito.io import import_file
 from ovito.io import export_file
 from ovito.modifiers import ClusterAnalysisModifier
 import numpy as np
+import os
 
-zip_code = '15090'
+# Be sure to specify your directories and filepaths here!!
 
-s1 = 'E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/'
+codes = ['USC00360022', 'USC00360861', 'USC00362574', 'USC00365573', 'USC00365918', 'USW00014762', 'USW00094823']
+
+s1 = 'E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/Weather Station Coords/'
 
 s2 = '_building_coords_reformatted.txt'
 
-step = 0.01
+for code in codes:
 
-i = 0.01
+    # This makes the folder to hold all Coords
 
-file_loc = s1 + zip_code + s2
+    os.mkdir(s1 + code)
 
-pipeline = import_file(file_loc)
+    # This is where you set your step size and intended range
 
-while i <= 1:
+    step = 0.001
 
-    pipeline.modifiers.append(ClusterAnalysisModifier(cutoff = i, sort_by_size = True))
+    i = 0.01
 
-    data = pipeline.compute()
+    final = 0.15
 
-    cluster_sizes = np.bincount(data.particles['Cluster'])
+    # This is the code that interfaces with Ovito
 
-    outpath = s1 + zip_code + '/' + zip_code + '_' + str(i) + '.txt'
+    file_loc = s1 + code + s2
 
-    np.savetxt(outpath, cluster_sizes)
+    pipeline = import_file(file_loc)
 
-    i += step
+    while i <= final:
 
-    i = round(i, 2)
+        pipeline.modifiers.append(ClusterAnalysisModifier(cutoff = i, sort_by_size = True))
+
+        data = pipeline.compute()
+
+        cluster_sizes = np.bincount(data.particles['Cluster'])
+
+        outpath = s1 + code + '/' + code + '_' + str(i) + '.txt'
+
+        np.savetxt(outpath, cluster_sizes)
+
+        i += step
+
+        # I couldn't figure it out so make sure you change the amount of
+        # sig figs you need here or else you might just be caught in a loop
+
+        i = round(i, 5)
