@@ -6,9 +6,11 @@ import os
 
 # Be sure to specify your directories and filepaths here!!
 
-codes = ['USC00360022', 'USC00360861', 'USC00362574', 'USC00365573', 'USC00365918', 'USW00014762', 'USW00094823']
+# codes = ['USW00093134', 'USW00023130']
+# codes = ['USC00360022', 'USC00360861', 'USC00362574', 'USC00365573', 'USC00365918', 'USW00014762', 'USW00094823']
+codes = ['US-Raleigh']
 
-s1 = 'E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/Weather Station Coords/'
+s1 = 'E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/Weather Station Coords/Raleigh/'
 
 s2 = '_building_coords_reformatted.txt'
 
