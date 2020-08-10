@@ -5,33 +5,33 @@ import processing
 
 layer = iface.activeLayer()
 
-inpath = 'E:/Old Downloads Folder/Research Stuff/GIS Maps/Learning how to find centroids/Allegheny_County_Building_Footprint_Locations.geojson'
-
+inpath = 'E:/Old Downloads Folder/Research Stuff/GIS Maps/Los Angeles/Building_Footprints-shp/e63e5597-6c0d-464f-8ba1-a7288771575e2020330-1-h41qrd.fsqij.shp'
 for feat in layer.getFeatures():
     
-    name = feat['Station']
+    name = str(int(feat['OBJECTID']))
     
-    layer.selectByExpression('"Station"=' + "'" + name + "'")
+    layer.selectByExpression('"OBJECTID"=' + "'" + name + "'")
     
-    clippath = QgsProcessingFeatureSourceDefinition('weather_clips_d75f6e40_b3a0_48a7_b83c_fdf5ef4cdc93', True)
-    outpath = 'E:/Old Downloads Folder/Research Stuff/GIS Maps/Weather Station Clips/'+ name +'_clip.shp'
+    clippath = QgsProcessingFeatureSourceDefinition('census_tracts_00213b30_7228_4058_a32e_dabc4cb5de75', True)
+    outpath = 'E:/Old Downloads Folder/Research Stuff/GIS Maps/Heat Map/Los Angeles/'+ name +'_clip.shp'
     
     processing.run('native:clip', {'INPUT': inpath, 'OVERLAY': clippath, 'OUTPUT': outpath})
     
     newLayer = QgsVectorLayer(outpath, 'temp', 'ogr')
     
-    with open("E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/Weather Station Coords/"+name+'_building_coords.txt', 'w') as file:
+    if newLayer.featureCount() > 2:
+    
+        with open("E:/Old Downloads Folder/Research Stuff/Jupyter Notebooks/Coords Folder/Heat Map/Los Angeles/"+name+'_building_coords.txt', 'w') as file:
 
-        for f in newLayer.getFeatures():
+            for f in newLayer.getFeatures():
 
-            center = f.geometry().centroid()
-            type = f['CLASS']
-            area = f.geometry().area()
-            
-            x = center.asPoint().x()
-            y = center.asPoint().y()
+                center = f.geometry().centroid()
+                area = f.geometry().area()
+                
+                x = center.asPoint().x()
+                y = center.asPoint().y()
 
-            line = '{},{},{},{}\n'.format(type, area, x, y)
+                line = '{},{},{}\n'.format(area, x, y)
 
-            file.write(line)
+                file.write(line)
     
