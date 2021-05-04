@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 
-name_path = 'D:/Research Files/Orientational Order Parameter/Counties/'
+name_path = 'D:/Research Files/Building Coords/Microsoft/'
 area_names = [dI for dI in os.listdir(name_path) if os.path.isdir(os.path.join(name_path,dI))]
 
 def getAverageHexOrder(filepath, k=2):
@@ -47,16 +47,8 @@ def getAverageHexOrder(filepath, k=2):
 
 for name in area_names:
     print('Now working on: ' + name)
-    data_path = name_path + name
-    county_nums = [dI for dI in os.listdir(data_path) if os.path.isdir(os.path.join(data_path,dI))]
-
-    all_hex = pd.DataFrame(columns = ['County', 'HexVal'])
-
-    for num in county_nums:
-        county_path = '%s/%s/%s_building_coords_reformatted.txt' % (data_path, num, num)
-
-        hex_val = getAverageHexOrder(county_path)
-        temp_frame = pd.DataFrame([[num, hex_val]], columns=all_hex.columns)
-        all_hex = all_hex.append(temp_frame, ignore_index=True)
-
-    all_hex.to_csv('%s/%s_2hex_order.txt' % (data_path, name), index=False)
+    data_path = '%s/%s/%s_building_coords_reformatted.txt' % (name_path, name, name)
+    hex_val = getAverageHexOrder(data_path)
+    save_path = '%s/%s/%s_2hex_order.txt' % (name_path, name, name)
+    with open(save_path, 'w+') as f:
+        f.write(str(hex_val))

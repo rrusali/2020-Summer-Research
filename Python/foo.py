@@ -1,45 +1,44 @@
-import geopandas as gpd
 import os
-import mapclassify
+import geopandas as gpd
 import pandas as pd
+import numpy as np
+from sklearn.metrics import r2_score
+from statistics import mode
 import matplotlib.pyplot as plt
+import imageio
+from math import log
 
-name_path = 'D:/Research Files/Orientational Order Parameter/Counties/'
-area_names = [dI for dI in os.listdir(name_path) if os.path.isdir(os.path.join(name_path,dI))]
+coords_path = 'D:/Research Files/Building Coords/Microsoft'
+rows = 99
+name = 'California'
+exponent = -1
 
-us_frame = gpd.GeoDataFrame()
+def getModeR2(name, exponent):
+    i = 0.3
+    y_predict = [expFunc(j, exponent) for j in x]
+    y_actual = getSizes(name, i)
+    y_predict = [log(i) for i in y_predict]
+    y_actual = [log(i) for i in y_actual]
 
-for name in area_names:
+    return(y_predict, y_actual)
 
-    print('Now working on: ' + name)
-    hex_path = "D:/Research Files/Orientational Order Parameter/Counties/%s/%s_2hex_order.csv" % (name, name)
-    hex_order = pd.read_csv(hex_path)
-    hex_order['County'] = pd.to_numeric(hex_order['County'])
+def getSizes(name, i):
+    coord_path = '%s/%s/%s/%s_%s.txt' % (coords_path, name, name, name, str(i))
+    temp_data = pd.read_csv(coord_path, names=['Size'], skiprows=1, nrows=rows)
+    temp_data['Size'] = temp_data['Size']/temp_data['Size'].max()
+    y = temp_data['Size'].to_list()
+    return(y)
 
-    shp_path = "D:/Research Files/Orientational Order Parameter/Counties/%s/%s_counties.shp" % (name, name)
-    shp_file = gpd.read_file(shp_path)
-    shp_file['COUNTYFP'] = pd.to_numeric(shp_file['COUNTYFP'])
+def expFunc(x, a):
+    return x**a
 
-    for_plotting = shp_file.merge(hex_order, left_on='COUNTYFP', right_on='County')
-    for_plotting = for_plotting.drop(['County'], axis=1)
+x = [i for i in range(1, 100)]
 
-    us_frame = us_frame.append(for_plotting)
+y_predict, y_actual = getModeR2(name, exponent)
 
-ax = us_frame.plot(
-                        column='HexVal',
-                        cmap='Reds',
-                        figsize=(15,9),
-                        scheme='quantiles',
-                        k=10,
-                        legend=True
-                    )
+print(r2_score(y_actual, y_predict))
 
-ax.set_title('Two-Fold Orientational Order for: ' + 'United States', fontsize=20, pad=12)
-ax.set_axis_off()
-ax.get_legend().set_bbox_to_anchor((1,0.5))
-plt.setp(ax.get_legend().get_texts(), fontsize='12')
-ax.get_figure()
-
-save_path = "D:/Research Files/Orientational Order Parameter/Counties/%s_hex_map.png" % ('US')
-plt.savefig(save_path)
-plt.close()
+plt.plot(x, y_actual, label='Actual', c='red')
+plt.plot(x, y_predict, label='Prediction', c='navy')
+plt.legend()
+plt.show()

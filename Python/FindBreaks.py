@@ -11,7 +11,7 @@ data_path = 'D:/Research Files/Building Coords/Microsoft/'
 area_names = [dI for dI in os.listdir(data_path) if os.path.isdir(os.path.join(data_path,dI))]
 
 def run():
-    for name in area_names:
+    for name in area_names[:1]:
         print('Now working on: ' + name)
         i = 0.01
         f = 0.6
@@ -31,18 +31,18 @@ def run():
             slopes = get_slopes(points)
             drops = find_drops(slopes, points)
 
-            if len(drops) > 0:
-                scale = get_scale(data_path, name)
-                dist = int(scale * i)
-                d = {'Distance': dist, 'Drops': [drops]}
-                temp_frame = pd.DataFrame(data=d)
+            # if len(drops) > 0:
+            scale = get_scale(data_path, name)
+            dist = int(scale * i)
+            d = {'Distance': dist, 'Drops': [drops]}
+            temp_frame = pd.DataFrame(data=d)
 
-                if len(export_frame) > 0:
-                    prev_drop = export_frame.tail(1)['Drops'].item()
-                    if temp_frame['Drops'].item() != prev_drop:
-                        export_frame = export_frame.append(temp_frame, ignore_index=True)
-                else:
+            if len(export_frame) > 0:
+                prev_drop = export_frame.tail(1)['Drops'].item()
+                if temp_frame['Drops'].item() != prev_drop:
                     export_frame = export_frame.append(temp_frame, ignore_index=True)
+            else:
+                export_frame = export_frame.append(temp_frame, ignore_index=True)
 
         if len(export_frame) == 0:
             print(name + ' has no drops!')
